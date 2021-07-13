@@ -1,0 +1,124 @@
+fw - transparent
+
+
+n7k
+vdi farm - pa L2 
+
+subnet a (anycast) -> fw -> subnet b (anycast)
+
+ips fpr - port mirror
+
+subnet = epg
+
+
+hugo jacko
+lumo - 2018, ver4.1-2
+recent testdrive
+
+
+Ricky Mok:
+Secure web gateway/browsing - Umbrella
+
+Network Visibility - StealthWatch / Dark Trace
+
+Network Access Control - ISE & Duo
+
+micro network segmentation / multicloud policy - Tetration
+
+CDP - SecureX
+
+(CX security - TBC)
+Cyber Security - Threat Hunting
+
+(Philip Gor)
+Isito - ACI integration -- Dirk
+
+ACI Contianer Security
+
+
+3x spine + 30x N93180 from P1 -> P0
+no SDA in P0 
+
+DID 20618250 for HKMA ACI project
+
+
+#----------------- Start of code capture -----------------
+
+#---------------QueryAvailableDvsSpec---------------
+$recommended = $true
+$_this = Get-View -Id 'DistributedVirtualSwitchManager-DVSManager'
+$_this.QueryAvailableDvsSpec($recommended)
+#---------------QueryDvsCheckCompatibility---------------
+$hostContainer = New-Object VMware.Vim.DistributedVirtualSwitchManagerHostContainer
+$hostContainer.Container = New-Object VMware.Vim.ManagedObjectReference
+$hostContainer.Container.Type = 'Datacenter'
+$hostContainer.Container.Value = 'datacenter-314'
+$hostContainer.Recursive = $true
+$dvsProductSpec = New-Object VMware.Vim.DistributedVirtualSwitchManagerDvsProductSpec
+$dvsProductSpec.NewSwitchProductSpec = New-Object VMware.Vim.DistributedVirtualSwitchProductSpec
+$dvsProductSpec.NewSwitchProductSpec.ForwardingClass = 'cswitch'
+$dvsProductSpec.NewSwitchProductSpec.Build = '00000'
+$dvsProductSpec.NewSwitchProductSpec.Vendor = 'VMware, Inc.'
+$dvsProductSpec.NewSwitchProductSpec.Name = 'DVS'
+$dvsProductSpec.NewSwitchProductSpec.Version = '6.6.0'
+$hostFilterSpec = New-Object VMware.Vim.DistributedVirtualSwitchManagerHostDvsFilterSpec[] (1)
+$hostFilterSpec[0] = New-Object VMware.Vim.DistributedVirtualSwitchManagerHostContainerFilter
+$hostFilterSpec[0].HostContainer = New-Object VMware.Vim.DistributedVirtualSwitchManagerHostContainer
+$hostFilterSpec[0].HostContainer.Container = New-Object VMware.Vim.ManagedObjectReference
+$hostFilterSpec[0].HostContainer.Container.Type = 'Datacenter'
+$hostFilterSpec[0].HostContainer.Container.Value = 'datacenter-314'
+$hostFilterSpec[0].HostContainer.Recursive = $true
+$hostFilterSpec[0].Inclusive = $true
+$_this = Get-View -Id 'DistributedVirtualSwitchManager-DVSManager'
+$_this.QueryDvsCheckCompatibility($hostContainer, $dvsProductSpec, $hostFilterSpec)
+#---------------QueryCompatibleHostForExistingDvs---------------
+$container = New-Object VMware.Vim.ManagedObjectReference
+$container.Type = 'Datacenter'
+$container.Value = 'datacenter-314'
+$recursive = $true
+$dvs = New-Object VMware.Vim.ManagedObjectReference
+$dvs.Type = 'VmwareDistributedVirtualSwitch'
+$dvs.Value = 'dvs-1413'
+$_this = Get-View -Id 'DistributedVirtualSwitchManager-DVSManager'
+$_this.QueryCompatibleHostForExistingDvs($container, $recursive, $dvs)
+#---------------ReconfigureDvs_Task---------------
+$spec = New-Object VMware.Vim.DVSConfigSpec
+$spec.ConfigVersion = '3'
+$spec.Host = New-Object VMware.Vim.DistributedVirtualSwitchHostMemberConfigSpec[] (1)
+$spec.Host[0] = New-Object VMware.Vim.DistributedVirtualSwitchHostMemberConfigSpec
+$spec.Host[0].Host = New-Object VMware.Vim.ManagedObjectReference
+$spec.Host[0].Host.Type = 'HostSystem'
+$spec.Host[0].Host.Value = 'host-372'
+$spec.Host[0].Operation = 'add'
+$_this = Get-View -Id 'VmwareDistributedVirtualSwitch-dvs-1413'
+$_this.ReconfigureDvs_Task($spec)
+#---------------FetchDVPorts---------------
+$criteria = New-Object VMware.Vim.DistributedVirtualSwitchPortCriteria
+$criteria.UplinkPort = $true
+$_this = Get-View -Id 'VmwareDistributedVirtualSwitch-dvs-1413'
+$_this.FetchDVPorts($criteria)
+#---------------UpdateNetworkConfig---------------
+$config = New-Object VMware.Vim.HostNetworkConfig
+$config.ProxySwitch = New-Object VMware.Vim.HostProxySwitchConfig[] (1)
+$config.ProxySwitch[0] = New-Object VMware.Vim.HostProxySwitchConfig
+$config.ProxySwitch[0].Uuid = '50 1a 00 f6 52 0f 9a cd-aa ff 4f d8 d0 2f 82 19'
+$config.ProxySwitch[0].ChangeOperation = 'edit'
+$config.ProxySwitch[0].Spec = New-Object VMware.Vim.HostProxySwitchSpec
+$config.ProxySwitch[0].Spec.Backing = New-Object VMware.Vim.DistributedVirtualSwitchHostMemberPnicBacking
+$config.ProxySwitch[0].Spec.Backing.PnicSpec = New-Object VMware.Vim.DistributedVirtualSwitchHostMemberPnicSpec[] (1)
+$config.ProxySwitch[0].Spec.Backing.PnicSpec[0] = New-Object VMware.Vim.DistributedVirtualSwitchHostMemberPnicSpec
+$config.ProxySwitch[0].Spec.Backing.PnicSpec[0].PnicDevice = 'vmnic2'
+$config.ProxySwitch[0].Spec.Backing.PnicSpec[0].UplinkPortKey = '0'
+$config.ProxySwitch[0].Spec.Backing.PnicSpec[0].UplinkPortgroupKey = 'dvportgroup-1414'
+$changeMode = 'modify'
+$_this = Get-View -Id 'HostNetworkSystem-networkSystem-372'
+$_this.UpdateNetworkConfig($config, $changeMode)
+
+#----------------- End of code capture -----------------
+
+
+
+
+
+
+
