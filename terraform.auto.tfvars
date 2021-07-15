@@ -76,6 +76,7 @@ vlan_pool = {
 }
 
 vmm_vmware = {
+/*
     two_tiers_com_vswitch = {
         provider_profile_dn = "uni/vmmp-VMware"
         name = "two_tiers_com_vswitch"
@@ -86,14 +87,13 @@ vmm_vmware = {
         aaep_name = "aaep_two_tiers_com_vswitch" 
         esxi_hosts = [ "10.74.202.122" ]
         uplinks = [ "vmnic2" ]
-
     }
+*/
     ucsm_vswitch = {
         provider_profile_dn = "uni/vmmp-VMware"
         name = "ucsm_vswitch"
         vlan_pool = "ucsm_vlan_pool_1"
         vcenter_host_or_ip = "10.74.202.163"
-#        vcenter_datacenter_name = "ACI-Datacenter"
         vcenter_datacenter_name = "HX-DC"
         dvs_version = "6.6"
         aaep_name = "aaep_ucsm_vswitch_vmm_vcenter" 
@@ -117,78 +117,22 @@ l3domain = {
 }
 
 access_port_group_policy = {
-    leaf_access_port_101_1_12_vmm_vcenter = {
-        name = "leaf_access_port_101_1_12_vmm_vcenter"
-        lldp_status = "two_tiers_com_lldp_disable"
-        cdp_status = "two_tiers_com_cdp_enable"
-        aaep_name = "aaep_two_tiers_com_vswitch"
-        leaf_profile = "leaf_101_profile_e1_12_vmm_vcenter"
-        leaf_block = [101]
-        ports = [
-            {
-                from_card = 1
-                from_port = 12
-                to_card = 1
-                to_port = 12
-            }
-        ]
-    }
     leaf_access_port_101_1_20_phydomain = {
         name = "leaf_access_port_101_1_20_phydomain"
         lldp_status = "two_tiers_com_lldp_disable"
         cdp_status = "two_tiers_com_cdp_enable"
         aaep_name = "aaep_two_tiers_com_asa_phydomain"
-        leaf_profile = "leaf_101_104_profile_phydomain"
-        leaf_block = [101, 104]
+        leaf_profile = "leaf-101-Chris-profile"
+        leaf_block = [ 101 ]
         ports = [
             {
                 from_card = 1
                 from_port = 20
                 to_card = 1
                 to_port = 20
-            },
-            {
-                from_card = 1
-                from_port = 25
-                to_card = 1
-                to_port = 25
             }
         ]
     }
-/*
-    leaf_access_port_101_1_15_vmm_vcenter = {
-        name = "leaf_access_port_101_1_15_vmm_vcenter"
-        lldp_status = "two_tiers_com_lldp_disable"
-        cdp_status = "two_tiers_com_cdp_enable"
-        aaep_name = "aaep_ucsm_vswitch_vmm_vcenter"
-        leaf_profile = "leaf_101_profile_e1_15_vmm_vcenter"
-        leaf_block = [101]
-        ports = [
-            {
-                from_card = 1
-                from_port = 15
-                to_card = 1
-                to_port = 15
-            }
-        ]
-    }
-    leaf_access_port_101_1_16_vmm_vcenter = {
-        name = "leaf_access_port_101_1_16_vmm_vcenter"
-        lldp_status = "two_tiers_com_lldp_disable"
-        cdp_status = "two_tiers_com_cdp_enable"
-        aaep_name = "aaep_ucsm_vswitch_vmm_vcenter"
-        leaf_profile = "leaf_101_profile_e1_16_vmm_vcenter"
-        leaf_block = [101]
-        ports = [
-            {
-                from_card = 1
-                from_port = 16
-                to_card = 1
-                to_port = 16
-            }
-        ]
-    }
-*/
 }
 
 vpc = {
@@ -282,12 +226,6 @@ pbr = {
 
 // Overlay config in ACI
 
-/*
-template_name = "General_Company_Template"
-schema_name = "General_Company_Schema"
-mso_site = "aci-site1"
-*/
-
 tenant = {
     name = "two_tiers_Company_Tenant"
     description = "Tenant Created by Terraform"
@@ -347,7 +285,7 @@ epgs = {
         display_name = "web_epg"
         anp_name = "two_tiers_ap" 
         bd_name = "web_bd"
-        vrf_name = "two_tiers_vrf"
+#        vrf_name = "two_tiers_vrf"
         dn = "ucsm_vswitch"
     }
     database_epg = {
@@ -355,7 +293,7 @@ epgs = {
         display_name = "database_epg"
         anp_name = "two_tiers_ap" 
         bd_name = "database_bd"
-        vrf_name = "two_tiers_vrf"
+#        vrf_name = "two_tiers_vrf"
         dn = "ucsm_vswitch"
     }
     app_epg = {
@@ -363,16 +301,8 @@ epgs = {
         display_name = "app_epg"
         anp_name = "two_tiers_ap" 
         bd_name = "app_bd"
-        vrf_name = "two_tiers_vrf"
+#        vrf_name = "two_tiers_vrf"
         dn = "ucsm_vswitch"
-    }
-    web_2_epg = {
-        name = "web_2_epg"
-        display_name = "web_2_epg"
-        anp_name = "two_tiers_ap" 
-        bd_name = "web_bd"
-        vrf_name = "two_tiers_vrf"
-        dn = "two_tiers_com_vswitch"
     }
 }
 
@@ -386,7 +316,6 @@ filters = {
         ip_protocol = "unspecified"
         destination_from = "unspecified"
         destination_to = "unspecified"
-#        stateful = false
         stateful = "no"
     }
     tcp_40000 = {
@@ -395,14 +324,12 @@ filters = {
         ip_protocol = "tcp"
         destination_from = "40000"
         destination_to = "40000"
-#        stateful=true
         stateful = "yes"
     }
     icmp = {
         name = "icmp"
         ether_type = "ip"
         ip_protocol = "icmp"
-#        stateful=false
         stateful = "no"
     }
     tcp_22 = {
@@ -411,7 +338,6 @@ filters = {
         ip_protocol = "tcp"
         destination_from = "ssh"
         destination_to = "ssh"
-#        stateful=true
         stateful = "yes"
     }
     tcp_3306 = {
@@ -420,7 +346,6 @@ filters = {
         ip_protocol = "tcp"
         destination_from = "3306"
         destination_to = "3306"
-#        stateful=true
         stateful = "yes"
     }
 }
@@ -431,9 +356,6 @@ contracts = {
         display_name = "Con_web_epg_to_app_epg"
         filter_type = "bothWay"
         scope = "tenant"
-#        filter_relationships = {
-#            filter_name = "tcp_40000"
-#        }
         filter_list = [ "tcp_22" ]
         directives = [ "none" ]
         anp_epg_consumer = {
@@ -450,9 +372,6 @@ contracts = {
         display_name = "Con_app_epg_to_database_epg"
         filter_type = "bothWay"
         scope = "tenant"
-#        filter_relationships = {
-#            filter_name = "tcp_40000"
-#        }
         filter_list = [ "icmp", "tcp_40000" ]
         directives = [ "none" ]
         anp_epg_consumer = {
