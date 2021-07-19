@@ -193,7 +193,7 @@ sg = {
 
     site_nodes = [{
       site_name   = "aci_site1"
-      tenant_name = "twi_tiers_Company_Tenant"
+      tenant_name = "two_tiers_Company_Tenant"
       node_name   = "two-arm-fw"
       }
     ]
