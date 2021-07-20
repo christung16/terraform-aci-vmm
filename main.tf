@@ -91,7 +91,7 @@ resource "aci_filter" "filters" {
 
 resource "aci_filter_entry" "filterentry" {
   for_each = var.filters
-  filter_dn = aci_filter.filters[each.value.name].id
+  filter_dn = aci_filter.filters[each.key].id
   description = try (each.value.entry_display_name, each.value.name)
   name = try (each.value.entry_name, each.value.name)
   ether_t = try (each.value.ether_type, "unspecified")
@@ -103,7 +103,7 @@ resource "aci_filter_entry" "filterentry" {
 
 resource "aci_contract_subject" "subjects" {
   for_each = var.contracts
-  contract_dn = aci_contract.contracts[each.value.contract_name].id
+  contract_dn = aci_contract.contracts[each.key].id
   description = format ("%s%s",each.value.contract_name, "_subj")
   name = format ("%s%s", each.value.contract_name, "_subj")
   relation_vz_rs_subj_filt_att = formatlist ("%s/%s%s", aci_tenant.this.id,"flt-",each.value.filter_list)
@@ -121,14 +121,14 @@ resource "aci_contract" "contracts" {
 resource "aci_epg_to_contract" "consumer" {
   for_each = var.contracts
   application_epg_dn = aci_application_epg.epgs[each.value.anp_epg_consumer.epg_name].id
-  contract_dn = aci_contract.contracts[each.value.contract_name].id
+  contract_dn = aci_contract.contracts[each.key].id
   contract_type = "consumer"
 }
 
 resource "aci_epg_to_contract" "provider" {
   for_each = var.contracts
   application_epg_dn = aci_application_epg.epgs[each.value.anp_epg_provider.epg_name].id
-  contract_dn = aci_contract.contracts[each.value.contract_name].id
+  contract_dn = aci_contract.contracts[each.key].id
   contract_type = "provider"
 }
 
@@ -142,7 +142,7 @@ resource "aci_vlan_pool" "vlan_pool" {
 
 resource "aci_ranges" "vlan_range" {
   for_each = var.vlan_pool
-  vlan_pool_dn = aci_vlan_pool.vlan_pool[each.value.name].id
+  vlan_pool_dn = aci_vlan_pool.vlan_pool[each.key].id
   from = each.value.from
   to = each.value.to
 }
@@ -150,7 +150,7 @@ resource "aci_ranges" "vlan_range" {
 resource "aci_attachable_access_entity_profile" "vmm_vmware_aaep" {
   for_each = var.vmm_vmware
   name = each.value.aaep_name
-  relation_infra_rs_dom_p = [ aci_vmm_domain.vmm_domain[each.value.name].id ]
+  relation_infra_rs_dom_p = [ aci_vmm_domain.vmm_domain[each.key].id ]
 }
 
 resource "aci_vmm_domain" "vmm_domain" {
@@ -165,7 +165,7 @@ resource "aci_vmm_domain" "vmm_domain" {
 
 resource "aci_vmm_credential" "vmm_cred" {
   for_each = var.vmm_vmware
-  vmm_domain_dn = aci_vmm_domain.vmm_domain[each.value.name].id
+  vmm_domain_dn = aci_vmm_domain.vmm_domain[each.key].id
   name = format( "%s%s", each.value.name,"-credential")
   annotation = "orchestrator:terraform"
   pwd = var.vcenter_user.password
@@ -175,26 +175,43 @@ resource "aci_vmm_credential" "vmm_cred" {
 
 resource "aci_vmm_controller" "gen_com_ctrl" {
   for_each = var.vmm_vmware
-  vmm_domain_dn = aci_vmm_domain.vmm_domain[each.value.name].id
+  vmm_domain_dn = aci_vmm_domain.vmm_domain[each.key].id
   name = format( "%s%s", each.value.name,"-controller")
   host_or_ip = each.value.vcenter_host_or_ip
   root_cont_name = each.value.vcenter_datacenter_name
   dvs_version = each.value.dvs_version
-  relation_vmm_rs_acc = aci_vmm_credential.vmm_cred[each.value.name].id
+  relation_vmm_rs_acc = aci_vmm_credential.vmm_cred[each.key].id
 }
 
 resource "aci_attachable_access_entity_profile" "phydomain_aaep" {
   for_each = var.phydomain
   name = each.value.aaep_name
-  relation_infra_rs_dom_p = [ aci_physical_domain.phydom[each.value.name].id ]
+  relation_infra_rs_dom_p = [ aci_physical_domain.phydom[each.key].id ]
 }
-
 
 resource "aci_physical_domain" "phydom" {
   for_each = var.phydomain
   name = each.value.name
   relation_infra_rs_vlan_ns = aci_vlan_pool.vlan_pool[each.value.vlan_pool].id
 }
+
+resource "aci_attachable_access_entity_profile" "l3domain_aaep" {
+  for_each = var.l3domain
+  name = each.value.aaep_name
+  relation_infra_rs_dom_p = [ aci_l3_domain_profile.l3domain[each.key].id ]
+}
+
+resource "aci_l3_domain_profile" "l3domain" {
+  for_each = var.l3domain
+  name = each.value.name
+  relation_infra_rs_vlan_ns = aci_vlan_pool.vlan_pool[each.value.vlan_pool].id
+}
+
+resource "aci_l3_outside" "l3out" {
+  for_each = var.l3outs
+  
+}
+
 
 resource "aci_cdp_interface_policy" "cdp" {
   for_each = var.cdp
@@ -259,7 +276,7 @@ module "vpc" {
 
 resource "aci_epg_to_domain" "this" {
   for_each = var.epgs
-  application_epg_dn = aci_application_epg.epgs[each.value.name].id
+  application_epg_dn = aci_application_epg.epgs[each.key].id
   tdn = aci_vmm_domain.vmm_domain[each.value.dn].id
   vmm_allow_promiscuous = "accept"
   vmm_forged_transmits = "accept"
@@ -417,7 +434,7 @@ resource "aci_l4_l7_service_graph_template" "this" {
 # Create L4-L7 Service Graph template node.
 resource "aci_function_node" "this" {
     for_each = var.sg
-    l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.this[each.value.name].id
+    l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.this[each.key].id
     name                            = each.value.site_nodes[0].node_name
     func_template_type              = "FW_ROUTED"
     func_type                       = "GoTo"
@@ -432,7 +449,7 @@ resource "aci_function_node" "this" {
 # Create L4-L7 Service Graph template T1 connection.
 resource "aci_connection" "t1-n1" {
     for_each = var.sg
-    l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.this[each.value.name].id
+    l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.this[each.key].id
     name           = "C2"
     adj_type       = "L3"
     conn_dir       = "provider"
@@ -440,15 +457,15 @@ resource "aci_connection" "t1-n1" {
     direct_connect = "no"
     unicast_route  = "yes"
     relation_vns_rs_abs_connection_conns = [
-        aci_l4_l7_service_graph_template.this[each.value.name].term_prov_dn,
-        aci_function_node.this[each.value.name].conn_provider_dn
+        aci_l4_l7_service_graph_template.this[each.key].term_prov_dn,
+        aci_function_node.this[each.key].conn_provider_dn
     ]
 }
 
 # Create L4-L7 Service Graph template T2 connection.
 resource "aci_connection" "n1-t2" {
     for_each = var.sg
-    l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.this[each.value.name].id
+    l4_l7_service_graph_template_dn = aci_l4_l7_service_graph_template.this[each.key].id
     name                            = "C1"
     adj_type                        = "L3"
     conn_dir                        = "provider"
@@ -456,8 +473,8 @@ resource "aci_connection" "n1-t2" {
     direct_connect                  = "no"
     unicast_route                   = "yes"
     relation_vns_rs_abs_connection_conns = [
-        aci_l4_l7_service_graph_template.this[each.value.name].term_cons_dn,
-        aci_function_node.this[each.value.name].conn_consumer_dn
+        aci_l4_l7_service_graph_template.this[each.key].term_cons_dn,
+        aci_function_node.this[each.key].conn_consumer_dn
     ]
 }
 
@@ -467,7 +484,7 @@ resource "aci_logical_device_context" "this" {
     tenant_dn                          = aci_tenant.this.id
     ctrct_name_or_lbl                  = each.value.contract_name
     graph_name_or_lbl                  = format ("%s%s", "sg-",each.value.name)
-    node_name_or_lbl                   = aci_function_node.this[each.value.name].name
+    node_name_or_lbl                   = aci_function_node.this[each.key].name
     relation_vns_rs_l_dev_ctx_to_l_dev = "${aci_tenant.this.id}/lDevVip-${each.value.name}"
 #    relation_vns_rs_l_dev_ctx_to_l_dev = aci_rest.device[each.value.name].id
     depends_on = [
@@ -479,7 +496,7 @@ resource "aci_logical_device_context" "this" {
 # Create L4-L7 Logical Device Interface Contexts.
 resource "aci_logical_interface_context" "consumer" {
   for_each = var.sg
-	logical_device_context_dn        = aci_logical_device_context.this[each.value.name].id
+	logical_device_context_dn        = aci_logical_device_context.this[each.key].id
 	conn_name_or_lbl                 = "consumer"
 	l3_dest                          = "yes"
 	permit_log                       = "no"
@@ -493,7 +510,7 @@ resource "aci_logical_interface_context" "consumer" {
 
 resource "aci_logical_interface_context" "provider" {
   for_each = var.sg
-	logical_device_context_dn        = aci_logical_device_context.this[each.value.name].id
+	logical_device_context_dn        = aci_logical_device_context.this[each.key].id
 	conn_name_or_lbl                 = "provider"
 	l3_dest                          = "yes"
 	permit_log                       = "no"
@@ -516,7 +533,7 @@ resource "aci_contract_subject" "subj" {
   for_each = var.sg
   contract_dn = "${aci_tenant.this.id}/brc-${each.value.contract_name}"
   name = format ("%s%s", each.value.contract_name, "_subj")
-  relation_vz_rs_subj_graph_att = aci_l4_l7_service_graph_template.sg_template[each.value.name].id
+  relation_vz_rs_subj_graph_att = aci_l4_l7_service_graph_template.sg_template[each.key].id
 }
 
 # Create IP SLA Monitoring Policy
@@ -582,7 +599,7 @@ resource "aci_destination_of_redirected_traffic" "pbr" {
 }
 
 
-/*
+
 #####################################
 # vcenter                           #
 #####################################
@@ -595,4 +612,4 @@ module "dvs" {
   esxi_hosts = each.value.esxi_hosts
   uplinks = each.value.uplinks
 }
-*/
+

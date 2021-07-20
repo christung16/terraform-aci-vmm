@@ -73,22 +73,15 @@ vlan_pool = {
         from = "vlan-2201"
         to = "vlan-2300"
     }
+    l3out_router_vlan = {
+        name = "l3out_router_vlan"
+        alloc_mode = "static"
+        from = "vlan-3001"
+        to = "vlan-3001"
+    }
 }
 
 vmm_vmware = {
-/*
-    two_tiers_com_vswitch = {
-        provider_profile_dn = "uni/vmmp-VMware"
-        name = "two_tiers_com_vswitch"
-        vlan_pool = "two_tiers_com_vlan_pool_1"
-        vcenter_host_or_ip = "10.74.202.163"
-        vcenter_datacenter_name = "ACI-Datacenter"
-        dvs_version = "6.6"
-        aaep_name = "aaep_two_tiers_com_vswitch" 
-        esxi_hosts = [ "10.74.202.122" ]
-        uplinks = [ "vmnic2" ]
-    }
-*/
     ucsm_vswitch = {
         provider_profile_dn = "uni/vmmp-VMware"
         name = "ucsm_vswitch"
@@ -110,10 +103,14 @@ phydomain = {
         vlan_pool = "two_tiers_com_asa_phy_vlan_pool"
         aaep_name = "aaep_two_tiers_com_asa_phydomain"
     }
-
 }
 
 l3domain = {
+    router_l3domain = {
+        name = "router_l3domain"
+        vlan_pool = "l3out_router_vlan"
+        aaep_name = "aaep_l3out_domain"
+    }
 }
 
 access_port_group_policy = {
@@ -130,6 +127,22 @@ access_port_group_policy = {
                 from_port = 20
                 to_card = 1
                 to_port = 20
+            }
+        ]
+    }
+    leaf_access_port_101_1_13_l3out = {
+        name = "leaf_access_port_101_1_13_l3out"
+        lldp_status = "two_tiers_com_lldp_disable"
+        cdp_status = "two_tiers_com_cdp_enable"
+        aaep_name = "aaep_l3out_domain"
+        leaf_profile = "leaf-101-Chris-profile"
+        leaf_block = [ 101 ]
+        ports = [
+            {
+                from_card = 1
+                from_port = 13
+                to_card = 1
+                to_port = 13
             }
         ]
     }
@@ -177,7 +190,7 @@ vpc = {
 
 sg = {
     two-arm-fw = {
-        name = "two-arm-fw"
+        name = "two-arm"
         service_node_type = "firewall"
         description = "two-arm-fw"
         devtype = "PHYSICAL"    // capital letters
@@ -193,7 +206,7 @@ sg = {
 
         site_nodes = [{
             site_name = "aci_site1"
-            tenant_name = "twi_tiers_Company_Tenant"
+            tenant_name = "two_tiers_Company_Tenant"
             node_name = "two-arm-fw"
             }
         ]
@@ -356,7 +369,7 @@ contracts = {
         display_name = "Con_web_epg_to_app_epg"
         filter_type = "bothWay"
         scope = "tenant"
-        filter_list = [ "tcp_22" ]
+        filter_list = [ "tcp_22", "tcp_3306" ]
         directives = [ "none" ]
         anp_epg_consumer = {
             anp_name = "two_tiers_ap"
@@ -386,6 +399,9 @@ contracts = {
 }
 
 l3outs = {
+    static_route = {
+        
+    }
 }
 
 ext_epg = {
