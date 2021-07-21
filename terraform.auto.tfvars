@@ -143,6 +143,12 @@ access_port_group_policy = {
                 from_port = 13
                 to_card = 1
                 to_port = 13
+            },
+            {
+                from_card = 1
+                from_port = 15
+                to_card = 1
+                to_port = 15
             }
         ]
     }
@@ -399,10 +405,53 @@ contracts = {
 }
 
 l3outs = {
-    static_route = {
-        
+    web_out_static_route = {
+        name = "web_out_static_route"
+        description = "static route from web epg to outside"
+#        enforce_rtctrl = [ "export" ]
+        vrf_name = "two_tiers_vrf"
+        l3domain_name = "router_l3domain"
+        lnodes = {
+            pod_name = "pod-1"
+            leaf_block = "101"
+            interface = "eth1/13"
+            rtr_id = "1.1.1.1"         // Router ID, same as loopback ID
+            ifInstT = "sub-interface"   // ext-svi is "SVI"; Routed Interface is "l3-port"; Sub-Interfaces is "sub-interface"
+            encap = "vlan-3001"
+            addr = "172.172.172.1/30"
+#            mac = "00:22:BD:F8:19:FF"  // Default is "00:22:BD:F8:19:FF"
+            ext_epg_name = "web_out_static_route_ext_epg"
+            static_routes = [
+                {
+                    subnet="10.100.3.0/24"
+                    next_hop = "172.172.172.2"
+                    scope = [ "shared-rtctrl", "export-rtctrl" ]
+                },
+                {
+                    subnet="10.200.3.0/24"
+                    next_hop = "172.172.172.2"
+                    scope = [ "shared-rtctrl" ]
+                },
+                {
+                    subnet="10.201.3.0/24"
+                    next_hop="172.172.172.2"
+                    scope = [ "shared-rtctrl" ]
+                }
+            ]
+        }
     }
 }
 
 ext_epg = {
+/*
+    web_out_static_route_ext_epg = {
+        name = "web_out_static_route_ext_epg"
+        l3out_name = "web_out_static_route"
+        subnets = {
+            "10.200.3.0/24" = "shared-rtctrl, export-rtctrl"
+            "10.201.3.0/24" = "shared-rtctrl"
+            "10.202.3.0/24" = "shared-rtctrl"
+        }
+    }
+*/
 }

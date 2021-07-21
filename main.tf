@@ -209,9 +209,59 @@ resource "aci_l3_domain_profile" "l3domain" {
 
 resource "aci_l3_outside" "l3out" {
   for_each = var.l3outs
-  
+  tenant_dn =  aci_tenant.this.id
+  name = each.value.name
+  description = each.value.description
+  enforce_rtctrl = try (each.value.enforce_rtctrl, [ "export" ])
+  relation_l3ext_rs_ectx = aci_vrf.vrfs[each.value.vrf_name].id
+  relation_l3ext_rs_l3_dom_att = aci_l3_domain_profile.l3domain[each.value.l3domain_name].id
+
 }
 
+resource "aci_logical_node_profile" "lnode" {
+  for_each = var.l3outs
+  l3_outside_dn = aci_l3_outside.l3out[each.key].id
+  name = format ("%s%s", each.value.name, "_nodeProfile")
+}
+
+resource "aci_logical_node_to_fabric_node" "rtrid" {
+  for_each = var.l3outs
+  logical_node_profile_dn = aci_logical_node_profile.lnode[each.key].id
+  tdn = "topology/${each.value.lnodes.pod_name}/node-${each.value.lnodes.leaf_block}"
+  rtr_id = each.value.lnodes.rtr_id
+  rtr_id_loop_back = "yes"
+}
+
+resource "aci_logical_interface_profile" "l_intf_prof" {
+  for_each = var.l3outs
+  logical_node_profile_dn = aci_logical_node_profile.lnode[each.key].id
+  name = replace("${each.value.lnodes.pod_name}-node-${each.value.lnodes.leaf_block}-${each.value.lnodes.interface}", "/", "-")
+}
+
+resource "aci_l3out_path_attachment" "l_intf_prof_port" {
+  for_each = var.l3outs
+  logical_interface_profile_dn = "${aci_logical_interface_profile.l_intf_prof[each.key].id}"
+  target_dn = "topology/${each.value.lnodes.pod_name}/paths-${each.value.lnodes.leaf_block}/pathep-[${each.value.lnodes.interface}]"
+  if_inst_t = each.value.lnodes.ifInstT
+  addr = each.value.lnodes.addr
+  encap = try (each.value.lnodes.encap, "unknown")
+  mac = try (each.value.lnodes.mac, "00:22:BD:F8:19:FF")
+}
+
+resource "aci_external_network_instance_profile" "extprofile" {
+  for_each = var.l3outs
+  l3_outside_dn = aci_l3_outside.l3out[each.key].id
+  name = each.value.lnodes.ext_epg_name
+}
+
+module "addstaticroutes" {
+  source = "./modules/addstaticroutes"
+  for_each = var.l3outs
+  static_routes = each.value.lnodes.static_routes
+  fabric_node_dn = aci_logical_node_to_fabric_node.rtrid[each.key].id
+  external_network_instance_profile_dn = aci_external_network_instance_profile.extprofile[each.key].id
+  name = each.value.name
+}
 
 resource "aci_cdp_interface_policy" "cdp" {
   for_each = var.cdp
