@@ -130,7 +130,7 @@ leaf_access_port_101_1_20_phydomain = {
     lldp_status = "two_tiers_com_lldp_disable"
     cdp_status = "two_tiers_com_cdp_enable"
     aaep_name = "aaep_two_tiers_com_asa_phydomain"
-    leaf_profile = "leaf-101-Chris-profile"
+    leaf_profile = "leaf-101-profile-asa-phydomain"
     leaf_block = [101]
     ports = [{
         
@@ -146,7 +146,7 @@ leaf_access_port_101_1_13_l3out = {
     lldp_status = "two_tiers_com_lldp_disable"
     cdp_status = "two_tiers_com_cdp_enable"
     aaep_name = "aaep_l3out_domain"
-    leaf_profile = "leaf-101-Chris-profile"
+    leaf_profile = "leaf-101-profile-l3out-domain"
     leaf_block = [101]
     ports = [{
         
