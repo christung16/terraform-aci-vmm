@@ -170,7 +170,11 @@ resource "aci_vmm_credential" "vmm_cred" {
   annotation = "orchestrator:terraform"
   pwd = var.vcenter_user.password
   usr = var.vcenter_user.username
-  
+  lifecycle {
+    ignore_changes = [
+      pwd,
+    ]
+  }
 }
 
 resource "aci_vmm_controller" "gen_com_ctrl" {
