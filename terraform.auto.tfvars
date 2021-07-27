@@ -140,12 +140,12 @@ leaf_access_port_101_1_20_phydomain = {
     leaf_profile = "leaf-101-profile-asa-phydomain"
     leaf_block = [101]
     ports = [{
-        
+            
     from_card = 1
     from_port = 20
     to_card = 1
     to_port = 20
-    }]
+        }]
 }
 leaf_access_port_101_1_13_l3out = {
     
@@ -156,12 +156,12 @@ leaf_access_port_101_1_13_l3out = {
     leaf_profile = "leaf-101-profile-l3out-domain"
     leaf_block = [101]
     ports = [{
-        
+            
     from_card = 1
     from_port = 13
     to_card = 1
     to_port = 13
-    }]
+        }]
 }
 }
 vpc = {
@@ -177,12 +177,12 @@ leaf_access_port_105_106_1_15_vpc_vmm_vcenter = {
     leaf_block = [105, 106]
     lag_t = "node"
     ports = [{
-        
+            
     from_card = 1
     from_port = 15
     to_card = 1
     to_port = 15
-    }]
+        }]
 }
 leaf_access_port_105_106_1_16_vpc_vmm_vcenter = {
     
@@ -195,12 +195,12 @@ leaf_access_port_105_106_1_16_vpc_vmm_vcenter = {
     leaf_block = [105, 106]
     lag_t = "node"
     ports = [{
-        
+            
     from_card = 1
     from_port = 16
     to_card = 1
     to_port = 16
-    }]
+        }]
 }
 }
 sg = {
@@ -221,11 +221,11 @@ two-arm-fw = {
     outside_card = "1"
     outside_port = "20"
     site_nodes = [{
-        
+            
     site_name = "aci_site1"
     tenant_name = "two_tiers_Company_Tenant"
     node_name = "two-arm-fw"
-    }]
+        }]
     contract_name = "Con_app_epg_to_database_epg"
     inside_bd_name = "fw_inside_bd"
     outside_bd_name = "fw_outside_bd"
@@ -447,11 +447,16 @@ lnodes = {
     addr = "172.172.172.1/30"
     ext_epg_name = "web_out_static_route_ext_epg"
     static_routes = [{
-        
+            
     subnet = "10.100.3.0/24"
     next_hop = "172.172.172.2"
     scope = ["shared-rtctrl", "export-rtctrl"]
-    }]
+        }, {
+            
+    subnet = "10.100.4.0/24"
+    next_hop = "172.172.172.2"
+    scope = ["shared-rtctrl", "export-rtctrl"]
+        }]
 }
 }
 }
