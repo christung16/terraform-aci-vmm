@@ -62,7 +62,9 @@ resource "vsphere_distributed_virtual_switch" "dvs" {
       devices = var.uplinks
     }
   }
-#  lifecycle {
-#    prevent_destroy = true
-#  }  
+  lifecycle {
+    ignore_changes = [
+      pvlan_mapping
+    ] 
+  }  
 }
