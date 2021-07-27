@@ -287,7 +287,7 @@ app_bd = {
     name = "app_bd"
     display_name = "app_bd"
     vrf_name = "two_tiers_vrf"
-    subnets = ["192.168.200.254/24", "10.10.10.0/24"]
+    subnets = ["192.168.200.254/24"]
 }
 database_bd = {
     
