@@ -108,7 +108,7 @@ ucsm_vswitch = {
     dvs_version = "6.6"
     aaep_name = "aaep_ucsm_vswitch_vmm_vcenter"
     esxi_hosts = ["10.74.202.50", "10.74.202.51", "10.74.202.52"]
-    uplinks = ["vmnic8", "vmnic9"]
+    uplinks = ["vmnic4", "vmnic8"]
 }
 }
 phydomain = {
