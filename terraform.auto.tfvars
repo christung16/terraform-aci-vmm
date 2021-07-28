@@ -88,13 +88,6 @@ l3out_router_vlan = {
     from = "vlan-3001"
     to = "vlan-3001"
 }
-test_bot = {
-    
-    name = "test_bot"
-    alloc_mode = "static"
-    from = "vlan-3100"
-    to = "vlan-3100"
-}
 test_pool = {
     
     name = "test_pool"
