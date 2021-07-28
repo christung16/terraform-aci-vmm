@@ -95,6 +95,13 @@ test_bot = {
     from = "vlan-3100"
     to = "vlan-3100"
 }
+test_pool = {
+    
+    name = "test_pool"
+    alloc_mode = "dynamic"
+    from = "vlan-3201"
+    to = "vlan-3300"
+}
 }
 vmm_vmware = {
     
