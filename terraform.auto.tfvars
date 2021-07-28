@@ -88,13 +88,6 @@ l3out_router_vlan = {
     from = "vlan-3001"
     to = "vlan-3001"
 }
-test_pool = {
-    
-    name = "test_pool"
-    alloc_mode = "dynamic"
-    from = "vlan-3201"
-    to = "vlan-3300"
-}
 }
 vmm_vmware = {
     
