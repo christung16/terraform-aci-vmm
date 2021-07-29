@@ -42,6 +42,10 @@ variable "epgs" {
   type = map(any)
 }
 
+variable "static_vlan_epgs" {
+  type = map(any)
+}
+
 variable "filters" {
   type = map(any)
 }

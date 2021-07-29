@@ -58,7 +58,14 @@ resource "aci_application_epg" "epgs" {
   name = each.value.name
   description = each.value.display_name
   relation_fv_rs_bd = aci_bridge_domain.bds[each.value.bd_name].id
+}
 
+resource "aci_application_epg" "static_vlan_epgs" {
+  for_each = var.static_vlan_epgs
+  application_profile_dn = aci_application_profile.anps[each.value.anp_name].id
+  name = each.value.name
+  description = each.value.display_name
+  relation_fv_rs_bd = aci_bridge_domain.bds[each.value.bd_name].id
 }
 
 locals {
@@ -338,6 +345,22 @@ resource "aci_epg_to_domain" "this" {
   res_imedcy = try (each.value.resolution_immediacy, "immediate")
 }
 
+resource "aci_epg_to_domain" "this_static_vlan_epgs" {
+  for_each = var.static_vlan_epgs
+  application_epg_dn = aci_application_epg.static_vlan_epgs[each.key].id
+  tdn = aci_physical_domain.phydom[each.value.dn].id
+}
+
+resource "aci_epg_to_static_path" "static_path" {
+  for_each = var.static_vlan_epgs
+  application_epg_dn = aci_application_epg.static_vlan_epgs[each.key].id
+#  tdn = module.vpc[each.value.vpc_name].aci_leaf_interface_profile.leaf_interface_profile.id
+  tdn = format ("%s%s%s","topology/pod-1/protpaths-105-106/pathep-[",each.value.vpc_name,"]")
+  encap = each.value.encap
+  mode = each.value.mode
+  instr_imedcy = "immediate"
+}
+
 # Create L4-L7 Device.
 resource "aci_rest" "device" {
     for_each = var.sg
@@ -598,7 +621,7 @@ resource "aci_rest" "ipsla" {
 {
 	"fvIPSLAMonitoringPol": {
 			"attributes": {
-				"dn": "uni/tn-two_tiers_Company_Tenant/ipslaMonitoringPol-${each.value.ipsla_name}",
+				"dn": "${aci_tenant.this.id}/ipslaMonitoringPol-${each.value.ipsla_name}",
 				"name": "${each.value.ipsla_name}",
 				"rn": "ipslaMonitoringPol-${each.value.ipsla_name}",
 				"status": "created"

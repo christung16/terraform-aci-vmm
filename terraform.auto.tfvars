@@ -497,3 +497,16 @@ lnodes = {
 ext_epg = {
     
 }
+
+static_vlan_epgs = {
+    web_epg = {
+        name = "web_epg"
+        display_name = "web_epg"
+        anp_name = "first_app_ap"
+        bd_name = "web_bd"
+        dn = "first_app_bare_metal_phydomain"
+        vpc_name = "leaf_access_port_105_106_1_27_vpc_vmm_vcenter"
+        encap = "vlan-2801"
+        mode = "regular"        //regular means trunk
+    }
+}
