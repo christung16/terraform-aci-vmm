@@ -88,6 +88,13 @@ l3out_router_vlan = {
     from = "vlan-3001"
     to = "vlan-3001"
 }
+two_tiers_bare_metal_vlan_pool = {
+
+    name = "two_tiers_bare_metal_vlan_pool"
+    alloc_mode = "static"
+    from = "vlan-2901"
+    to = "vlan-3000"
+}
 }
 vmm_vmware = {
     
@@ -111,6 +118,11 @@ asa_two_arm_fw_phydomain = {
     name = "asa_two_arm_fw_phydomain"
     vlan_pool = "two_tiers_com_asa_phy_vlan_pool"
     aaep_name = "aaep_two_tiers_com_asa_phydomain"
+}
+two_tiers_bare_metal_phydomain = {
+    name = "two_tiers_bare_metal_phydomain"
+    vlan_pool = "two_tiers_bare_metal_vlan_pool"
+    aaep_name = "aaep_two_tiers_bare_metal_phydomain"
 }
 }
 l3domain = {
@@ -229,6 +241,24 @@ leaf_access_port_105_106_1_18_vpc_vmm_vcenter = {
     from_port = 18
     to_card = 1
     to_port = 18
+        }]
+}
+leaf_access_port_105_106_1_19_vpc_phydomain = {
+    
+    name = "leaf_access_port_105_106_1_19_vpc_phydomain"
+    lldp_status = "two_tiers_com_lldp_enable"
+    cdp_status = "two_tiers_com_cdp_enable"
+    port_channel_status = "two_tiers_com_lacp_active"
+    aaep_name = "aaep_two_tiers_bare_metal_phydomain"
+    leaf_profile = "leaf_access_port_105_106_1_19_vpc_phydomain"
+    leaf_block = [105, 106]
+    lag_t = "node"
+    ports = [{
+            
+    from_card = 1
+    from_port = 19
+    to_card = 1
+    to_port = 19
         }]
 }
 }
@@ -502,11 +532,11 @@ static_vlan_epgs = {
     web_epg = {
         name = "web_epg"
         display_name = "web_epg"
-        anp_name = "first_app_ap"
+        anp_name = "two_tiers_ap"
         bd_name = "web_bd"
-        dn = "first_app_bare_metal_phydomain"
-        vpc_name = "leaf_access_port_105_106_1_27_vpc_vmm_vcenter"
-        encap = "vlan-2801"
+        dn = "two_tiers_bare_metal_phydomain"
+        vpc_name = "leaf_access_port_105_106_1_19_vpc_phydomain"
+        encap = "vlan-2901"
         mode = "regular"        //regular means trunk
     }
 }
