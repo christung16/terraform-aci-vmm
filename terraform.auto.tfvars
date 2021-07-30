@@ -89,7 +89,7 @@ l3out_router_vlan = {
     to = "vlan-3001"
 }
 two_tiers_bare_metal_vlan_pool = {
-
+    
     name = "two_tiers_bare_metal_vlan_pool"
     alloc_mode = "static"
     from = "vlan-2901"
@@ -120,6 +120,7 @@ asa_two_arm_fw_phydomain = {
     aaep_name = "aaep_two_tiers_com_asa_phydomain"
 }
 two_tiers_bare_metal_phydomain = {
+    
     name = "two_tiers_bare_metal_phydomain"
     vlan_pool = "two_tiers_bare_metal_vlan_pool"
     aaep_name = "aaep_two_tiers_bare_metal_phydomain"
@@ -339,7 +340,7 @@ web_bd = {
     name = "web_bd"
     display_name = "web_bd"
     vrf_name = "two_tiers_vrf"
-    subnets = ["192.168.100.254/24", "10.1.1.254/24"]
+    subnets = ["192.168.100.254/24", "10.1.1.254/24", "10.1.2.254/24"]
 }
 app_bd = {
     
@@ -527,16 +528,17 @@ lnodes = {
 ext_epg = {
     
 }
-
 static_vlan_epgs = {
-    web_epg = {
-        name = "web_epg"
-        display_name = "web_epg"
-        anp_name = "two_tiers_ap"
-        bd_name = "web_bd"
-        dn = "two_tiers_bare_metal_phydomain"
-        vpc_name = "leaf_access_port_105_106_1_19_vpc_phydomain"
-        encap = "vlan-2901"
-        mode = "regular"        //regular means trunk
-    }
+    
+web_epg = {
+    
+    name = "web_epg"
+    display_name = "web_epg"
+    anp_name = "two_tiers_ap"
+    bd_name = "web_bd"
+    dn = "two_tiers_bare_metal_phydomain"
+    vpc_name = "leaf_access_port_105_106_1_19_vpc_phydomain"
+    encap = "vlan-2901"
+    mode = "regular"
+}
 }
