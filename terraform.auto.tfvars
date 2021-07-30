@@ -387,7 +387,10 @@ database_epg = {
     display_name = "database_epg"
     anp_name = "two_tiers_ap"
     bd_name = "database_bd"
-    dn = "ucsm_vswitch"
+    dn = "two_tiers_bare_metal_phydomain"
+    vpc_name = "leaf_access_port_105_106_1_19_vpc_phydomain"
+    encap = "vlan-3000"
+    mode = "regular"
 }
 app_epg = {
     
@@ -539,6 +542,17 @@ web_epg = {
     dn = "two_tiers_bare_metal_phydomain"
     vpc_name = "leaf_access_port_105_106_1_19_vpc_phydomain"
     encap = "vlan-2901"
+    mode = "regular"
+}
+database_epg = {
+    
+    name = "database_epg"
+    display_name = "database_epg"
+    anp_name = "two_tiers_ap"
+    bd_name = "database_bd"
+    dn = "two_tiers_bare_metal_phydomain"
+    vpc_name = "leaf_access_port_105_106_1_19_vpc_phydomain"
+    encap = "vlan-3000"
     mode = "regular"
 }
 }
