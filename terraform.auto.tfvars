@@ -340,7 +340,7 @@ web_bd = {
     name = "web_bd"
     display_name = "web_bd"
     vrf_name = "two_tiers_vrf"
-    subnets = ["192.168.100.254/24", "10.1.1.254/24", "10.1.2.254/24"]
+    subnets = ["192.168.100.254/24", "10.1.1.254/24"]
 }
 app_bd = {
     
