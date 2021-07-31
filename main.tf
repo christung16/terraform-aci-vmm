@@ -60,6 +60,7 @@ resource "aci_application_epg" "epgs" {
   relation_fv_rs_bd = aci_bridge_domain.bds[each.value.bd_name].id
 }
 
+/*
 resource "aci_application_epg" "static_vlan_epgs" {
   for_each = var.static_vlan_epgs
   application_profile_dn = aci_application_profile.anps[each.value.anp_name].id
@@ -67,6 +68,7 @@ resource "aci_application_epg" "static_vlan_epgs" {
   description = each.value.display_name
   relation_fv_rs_bd = aci_bridge_domain.bds[each.value.bd_name].id
 }
+*/
 
 locals {
   bd_subnets = flatten ([
@@ -347,13 +349,13 @@ resource "aci_epg_to_domain" "this" {
 
 resource "aci_epg_to_domain" "this_static_vlan_epgs" {
   for_each = var.static_vlan_epgs
-  application_epg_dn = aci_application_epg.static_vlan_epgs[each.key].id
+  application_epg_dn = aci_application_epg.epgs[each.key].id
   tdn = aci_physical_domain.phydom[each.value.dn].id
 }
 
 resource "aci_epg_to_static_path" "static_path" {
   for_each = var.static_vlan_epgs
-  application_epg_dn = aci_application_epg.static_vlan_epgs[each.key].id
+  application_epg_dn = aci_application_epg.epgs[each.key].id
 #  tdn = module.vpc[each.value.vpc_name].aci_leaf_interface_profile.leaf_interface_profile.id
   tdn = format ("%s%s%s","topology/pod-1/protpaths-105-106/pathep-[",each.value.vpc_name,"]")
   encap = each.value.encap
