@@ -528,4 +528,15 @@ web_epg = {
     encap = "vlan-2901"
     mode = "regular"
 }
+app_epg = {
+    
+    name = "app_epg"
+    display_name = "app_epg"
+    anp_name = "two_tiers_ap"
+    bd_name = "app_bd"
+    dn = "two_tiers_bare_metal_phydomain"
+    vpc_name = "leaf_access_port_105_106_1_19_vpc_phydomain"
+    encap = "vlan-3000"
+    mode = "regular"
+}
 }
