@@ -244,6 +244,24 @@ leaf_access_port_105_106_1_19_vpc_phydomain = {
     to_port = 19
         }]
 }
+leaf_access_port_105_106_1_20_vpc_vmm_vcenter = {
+    
+    name = "leaf_access_port_105_106_1_20_vpc_vmm_vcenter"
+    lldp_status = "two_tiers_com_lldp_enable"
+    cdp_status = "two_tiers_com_cdp_disable"
+    port_channel_status = "two_tiers_com_lacp_active"
+    aaep_name = "aaep_ucsm_vswitch_vmm_vcenter"
+    leaf_profile = "leaf_105_106_profile_e1_20_vpc_vmm_vcenter"
+    leaf_block = [105, 106]
+    lag_t = "node"
+    ports = [{
+            
+    from_card = 1
+    from_port = 20
+    to_card = 1
+    to_port = 20
+        }]
+}
 }
 sg = {
     
