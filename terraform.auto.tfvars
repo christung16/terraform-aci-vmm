@@ -523,6 +523,11 @@ lnodes = {
     subnet = "10.100.9.0/24"
     next_hop = "172.172.172.2"
     scope = ["shared-rtctrl", "export-rtctrl"]
+        }, {
+            
+    subnet = "10.100.10.0/24"
+    next_hop = "172.172.172.2"
+    scope = ["shared-rtctrl", "export-rtctrl"]
         }]
 }
 }
